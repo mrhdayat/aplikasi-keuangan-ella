@@ -8,7 +8,6 @@ import TransactionForm from './pages/TransactionForm';
 import TransactionList from './pages/TransactionList';
 import ProfitLossReport from './pages/ProfitLossReport';
 import MasterAccounts from './pages/MasterAccounts';
-import MasterProjects from './pages/MasterProjects';
 import Settings from './pages/Settings';
 import Login from './pages/Login';
 import { AuthProvider, useAuth } from './features/auth/AuthContext';
@@ -48,7 +47,7 @@ function App() {
                 
                 <Route path="master">
                   <Route path="accounts" element={<MasterAccounts />} />
-                  <Route path="projects" element={<MasterProjects />} />
+              
                 </Route>
 
                 <Route path="settings" element={<Settings />} />

@@ -9,22 +9,20 @@ export const journalEntrySchema = z.object({
 
 export const transactionSchema = z.object({
   date: z.string().min(1, "Tanggal wajib diisi"),
-  voucher_number: z.string().min(1, "No Bukti wajib diisi"),
+  // HAPUS: voucher_number, transaction_type_id, project_id
   description: z.string().min(1, "Uraian wajib diisi"),
-  transaction_type_id: z.string().min(1, "Jenis transaksi wajib dipilih"),
-  project_id: z.string().optional(), // Boleh null jika operasional kantor
   status: z.enum(['DRAFT', 'POSTED']),
-  journal_entries: z.array(journalEntrySchema).min(2, "Minimal 2 baris jurnal"),
+  journal_entries: z.array(journalEntrySchema).min(2, "Minimal 2 baris jurnal (Debit & Kredit)"),
 }).refine((data) => {
   if (data.status === 'POSTED') {
     const totalDebit = data.journal_entries.reduce((sum, item) => sum + item.debit, 0);
     const totalCredit = data.journal_entries.reduce((sum, item) => sum + item.credit, 0);
-    return Math.abs(totalDebit - totalCredit) < 0.01; // Toleransi floating point
+    return Math.abs(totalDebit - totalCredit) < 1; 
   }
   return true;
 }, {
-  message: "Total Debit dan Kredit harus seimbang untuk Posting",
-  path: ["status"], // Error muncul di field status
+  message: "Jurnal tidak seimbang (Balance tidak 0)",
+  path: ["status"], 
 });
 
 export type TransactionFormValues = z.infer<typeof transactionSchema>;
