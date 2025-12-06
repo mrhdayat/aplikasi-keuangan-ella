@@ -1,0 +1,19 @@
+# Node modules
+node_modules/
+dist/
+build/
+
+# dotenv environment variables
+.env
+
+# Log files
+*.log
+
+# Editor directories and files
+.idea/
+.vscode/
+*.swp
+.DS_Store
+
+# Vercel
+.vercel/
