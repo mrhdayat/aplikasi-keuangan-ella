@@ -1,7 +1,6 @@
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '../lib/supabaseClient';
 import { toast } from 'sonner';
-// FIXED: Menghapus useMutation, XCircle, TrendingDown, PieIcon, CheckCircle (karena tidak dipakai)
 import { ShieldAlert, UserCheck, TrendingUp } from 'lucide-react';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
 
@@ -129,7 +128,8 @@ export default function VerificatorDashboard() {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           <div className="lg:col-span-2 bg-white p-6 rounded-xl shadow border border-slate-200 opacity-90"> 
             <h3 className="font-bold text-slate-700 mb-4 text-sm">Arus Kas (Pendapatan vs Beban)</h3>
-            <div className="h-64">
+            {/* FIX: Tambah min-h-[300px] */}
+            <div className="h-64 w-full min-h-[300px]">
               <ResponsiveContainer width="100%" height="100%">
                 <BarChart data={monthlyData}>
                   <CartesianGrid strokeDasharray="3 3" vertical={false} />
@@ -145,11 +145,11 @@ export default function VerificatorDashboard() {
 
           <div className="bg-white p-6 rounded-xl shadow border border-slate-200 opacity-90">
             <h3 className="font-bold text-slate-700 mb-4 text-sm">Komposisi Beban</h3>
-            <div className="h-48">
+            {/* FIX: Tambah min-h-[250px] */}
+            <div className="h-48 w-full min-h-[250px]">
               <ResponsiveContainer width="100%" height="100%">
                 <PieChart>
                   <Pie data={pieData} cx="50%" cy="50%" innerRadius={50} outerRadius={70} paddingAngle={5} dataKey="value">
-                    {/* FIXED: Menggunakan underscore (_) agar 'entry' tidak dianggap unused */}
                     {pieData.map((_, index) => (
                       <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                     ))}

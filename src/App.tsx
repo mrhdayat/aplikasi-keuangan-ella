@@ -10,7 +10,7 @@ import ProfitLossReport from './pages/ProfitLossReport';
 import MasterAccounts from './pages/MasterAccounts';
 import Settings from './pages/Settings';
 import Login from './pages/Login';
-import LandingPage from './pages/LandingPage'; // IMPORT LANDING PAGE
+import LandingPage from './pages/LandingPage';
 import { AuthProvider, useAuth } from './features/auth/AuthContext';
 
 const queryClient = new QueryClient();
@@ -18,7 +18,6 @@ const queryClient = new QueryClient();
 const ProtectedRoute = () => {
   const { session, loading } = useAuth();
   if (loading) return <div className="flex h-screen items-center justify-center">Loading...</div>;
-  // UPDATE: Jika belum login, lempar ke URL Login Rahasia (bukan /login lagi)
   return session ? <Outlet /> : <Navigate to="/portal-staff" />;
 };
 
@@ -30,35 +29,36 @@ function App() {
           <Toaster position="top-right" richColors closeButton />
           
           <Routes>
-            {/* ROUTE PUBLIK */}
+            {/* 1. ROUTE PUBLIK (Bisa diakses siapa saja) */}
             <Route path="/" element={<LandingPage />} />
-            
-            {/* ROUTE LOGIN RAHASIA (Ganti 'portal-staff' dengan kata acak lain jika mau lebih aman) */}
             <Route path="/portal-staff" element={<Login />} />
             
-            {/* ROUTE TERPROTEKSI (DASHBOARD) */}
+            {/* 2. ROUTE TERPROTEKSI (Admin Panel) */}
             <Route element={<ProtectedRoute />}>
-              <Route path="/dashboard" element={<MainLayout />}>
-                 {/* Redirect /dashboard langsung ke index dashboard */}
-                 <Route index element={<Dashboard />} />
+              {/* MainLayout membungkus semua halaman admin */}
+              <Route element={<MainLayout />}>
                 
-                <Route path="transactions">
-                  <Route index element={<TransactionList />} />
-                  <Route path="new" element={<TransactionForm />} />
-                  <Route path=":id/edit" element={<TransactionForm />} />
-                </Route>
-                
-                <Route path="reports">
-                  <Route path="profit-loss" element={<ProfitLossReport />} />
-                </Route>
-                
-                <Route path="master">
-                  <Route path="accounts" element={<MasterAccounts />} />
-                </Route>
+                {/* Halaman Dashboard Utama */}
+                <Route path="/dashboard" element={<Dashboard />} />
 
-                <Route path="settings" element={<Settings />} />
+                {/* Halaman Transaksi */}
+                <Route path="/transactions" element={<TransactionList />} />
+                <Route path="/transactions/new" element={<TransactionForm />} />
+                <Route path="/transactions/:id/edit" element={<TransactionForm />} />
+                
+                {/* Halaman Laporan */}
+                <Route path="/reports/profit-loss" element={<ProfitLossReport />} />
+                
+                {/* Halaman Master Data */}
+                <Route path="/master/accounts" element={<MasterAccounts />} />
+
+                {/* Halaman Pengaturan */}
+                <Route path="/settings" element={<Settings />} />
               </Route>
             </Route>
+
+            {/* Redirect jika user nyasar ke halaman yang tidak ada */}
+            <Route path="*" element={<Navigate to="/" />} />
           </Routes>
         </AuthProvider>
       </BrowserRouter>

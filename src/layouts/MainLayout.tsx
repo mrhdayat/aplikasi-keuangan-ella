@@ -1,5 +1,4 @@
 import { Outlet, NavLink } from 'react-router-dom';
-// Hapus icon Briefcase
 import { LayoutDashboard, FileText, PlusCircle, List, LogOut, Book, Settings } from 'lucide-react';
 import { supabase } from '../lib/supabaseClient';
 import { useAuth } from '../features/auth/AuthContext';
@@ -9,16 +8,16 @@ export default function MainLayout() {
   
   const handleLogout = async () => {
     await supabase.auth.signOut();
-    window.location.reload();
+    window.location.href = '/'; // Reload ke Landing Page
   };
 
   const navItems = [
-    { name: 'Dashboard', path: '/', icon: LayoutDashboard },
+    // FIX: Link Dashboard mengarah ke /dashboard (bukan /)
+    { name: 'Dashboard', path: '/dashboard', icon: LayoutDashboard },
     { name: 'Input Jurnal', path: '/transactions/new', icon: PlusCircle },
     { name: 'Daftar Jurnal', path: '/transactions', icon: List },
     { name: 'Laporan Laba Rugi', path: '/reports/profit-loss', icon: FileText },
     { name: 'Master Akun (COA)', path: '/master/accounts', icon: Book },
-    // Master Proyek DIHAPUS
     { name: 'Pengaturan Akun', path: '/settings', icon: Settings },
   ];
 

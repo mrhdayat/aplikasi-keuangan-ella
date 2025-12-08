@@ -67,7 +67,8 @@ export default function FinanceDashboard() {
           <h3 className="font-bold text-gray-700 mb-4 flex items-center gap-2">
             <TrendingUp size={20} className="text-blue-500" /> Arus Kas Bulanan
           </h3>
-          <div className="h-80">
+          {/* FIX: Tambah min-h-[300px] */}
+          <div className="h-80 w-full min-h-[300px]">
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={monthlyData}>
                 <CartesianGrid strokeDasharray="3 3" vertical={false} />
@@ -85,11 +86,11 @@ export default function FinanceDashboard() {
           <h3 className="font-bold text-gray-700 mb-4 flex items-center gap-2">
             <TrendingDown size={20} className="text-orange-500" /> Komposisi Beban
           </h3>
-          <div className="h-64">
+          {/* FIX: Tambah min-h-[250px] */}
+          <div className="h-64 w-full min-h-[250px]">
             <ResponsiveContainer width="100%" height="100%">
               <PieChart>
                 <Pie data={pieData} cx="50%" cy="50%" innerRadius={60} outerRadius={80} paddingAngle={5} dataKey="value">
-                  {/* FIXED: Menggunakan underscore (_) agar 'entry' tidak dianggap unused */}
                   {pieData.map((_, index) => (
                     <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                   ))}
