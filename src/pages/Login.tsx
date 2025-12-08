@@ -9,8 +9,8 @@ export default function Login() {
   
   // State PIN Keamanan
   const [accessCode, setAccessCode] = useState('');
-  const [isVerified, setIsVerified] = useState(false); // Default: Terkunci
-  const SECRET_PIN = '2025'; // Ganti ini dengan PIN rahasia Anda
+  const [isVerified, setIsVerified] = useState(false); 
+  const SECRET_PIN = '2025'; 
 
   // State Login Biasa
   const [email, setEmail] = useState('');
@@ -22,7 +22,7 @@ export default function Login() {
     e.preventDefault();
     if (accessCode === SECRET_PIN) {
       setIsVerified(true);
-      toast.success('Akses Diterima. Silakan Login.');
+      toast.success('Akses Diterima.');
     } else {
       toast.error('Kode Akses Salah!', { description: 'IP Anda telah dicatat.' });
       setAccessCode('');
@@ -43,22 +43,20 @@ export default function Login() {
       toast.error('Login Gagal', { description: error.message });
     } else {
       toast.success('Selamat Datang Kembali!');
-      navigate('/'); 
+      // PERBAIKAN DI SINI: Arahkan ke /dashboard, BUKAN /
+      navigate('/dashboard'); 
     }
     setLoading(false);
   };
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-slate-100 p-4">
-      {/* BACKGROUND DECORATION */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         <div className="absolute -top-[20%] -left-[10%] w-[50%] h-[50%] bg-blue-200 rounded-full blur-[100px] opacity-30"></div>
         <div className="absolute bottom-[0%] right-[0%] w-[40%] h-[40%] bg-indigo-200 rounded-full blur-[100px] opacity-30"></div>
       </div>
 
       <div className="bg-white p-8 rounded-2xl shadow-xl w-full max-w-md border border-slate-200 relative z-10">
-        
-        {/* HEADER */}
         <div className="text-center mb-8">
           <div className="bg-blue-600 w-16 h-16 rounded-2xl mx-auto flex items-center justify-center shadow-lg mb-4">
             {isVerified ? <Lock className="text-white" size={32} /> : <Shield className="text-white" size={32} />}
@@ -71,7 +69,6 @@ export default function Login() {
           </p>
         </div>
         
-        {/* TAMPILAN 1: FORM KODE AKSES (GATEKEEPER) */}
         {!isVerified ? (
           <form onSubmit={handleVerifyCode} className="space-y-6">
             <div>
@@ -96,7 +93,6 @@ export default function Login() {
             </button>
           </form>
         ) : (
-          /* TAMPILAN 2: FORM LOGIN EMAIL (SETELAH LOLOS PIN) */
           <form onSubmit={handleLogin} className="space-y-4 animate-in fade-in slide-in-from-bottom-4 duration-500">
             <div>
               <label className="block text-sm font-medium text-slate-700 mb-1">Email</label>

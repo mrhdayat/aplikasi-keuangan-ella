@@ -14,7 +14,7 @@ export default function TransactionForm() {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
 
-  // 1. Fetch HANYA Master Akun (Master lain dihapus)
+  // Fetch Master Akun
   const { data: accounts } = useQuery({
     queryKey: ['accounts'],
     queryFn: async () => {
@@ -23,7 +23,7 @@ export default function TransactionForm() {
     }
   });
 
-  // 2. Fetch Existing Data (Edit Mode)
+  // Fetch Data (Edit Mode)
   const { data: existingData } = useQuery({
     queryKey: ['transaction', id],
     queryFn: async () => {
@@ -38,7 +38,6 @@ export default function TransactionForm() {
     enabled: isEditMode 
   });
 
-  // 3. Setup Form
   const form = useForm({
     resolver: zodResolver(transactionSchema),
     defaultValues: {
@@ -52,7 +51,6 @@ export default function TransactionForm() {
     }
   });
 
-  // Populate Form saat Edit
   useEffect(() => {
     if (existingData) {
       form.reset({
@@ -79,14 +77,12 @@ export default function TransactionForm() {
   const totalCredit = watchedEntries.reduce((sum, val) => sum + (Number(val.credit) || 0), 0);
   const isBalanced = Math.abs(totalDebit - totalCredit) < 1;
 
-  // 4. Mutation
   const mutation = useMutation({
     mutationFn: async (data: TransactionFormValues) => {
       let trxId = id;
 
       const payload = {
         date: data.date,
-        // Voucher number dihapus, biarkan null atau generate di backend jika perlu
         description: data.description,
         status: data.status,
         total_debit: totalDebit,
@@ -119,20 +115,44 @@ export default function TransactionForm() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['transactions'] });
-      navigate('/transactions');
-      toast.success(isEditMode ? 'Transaksi diperbarui!' : 'Transaksi disimpan!');
+      
+      // LOGIKA BARU DI SINI:
+      if (isEditMode) {
+        // Jika Edit, kembali ke list (karena biasanya selesai edit kita mau lihat hasilnya)
+        navigate('/transactions');
+        toast.success('Transaksi diperbarui!');
+      } else {
+        // Jika Input Baru, TETAP DI HALAMAN INI dan RESET FORM
+        toast.success('Transaksi disimpan! Siap input berikutnya.');
+        
+        // Reset form ke kondisi awal (kosong)
+        form.reset({
+          date: form.getValues('date'), // Tanggal tidak direset biar cepat input hari yang sama
+          description: '',
+          status: 'DRAFT',
+          journal_entries: [
+            { account_id: '', debit: 0, credit: 0, line_description: '' },
+            { account_id: '', debit: 0, credit: 0, line_description: '' }
+          ]
+        });
+        // Scroll ke atas agar user sadar form sudah baru
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }
     },
     onError: (error: any) => toast.error(`Gagal: ${error.message}`)
   });
 
   return (
     <div className="p-6 max-w-4xl mx-auto bg-white shadow-md rounded-lg mt-6">
-      <div className="border-b pb-4 mb-6">
+      <div className="border-b pb-4 mb-6 flex justify-between items-center">
         <h2 className="text-2xl font-bold text-gray-800">{isEditMode ? 'Edit Jurnal Umum' : 'Input Jurnal Umum'}</h2>
+        {/* Tombol kembali manual jika user ingin batal */}
+        <button onClick={() => navigate('/transactions')} className="text-sm text-gray-500 hover:text-gray-700">
+          Kembali ke List
+        </button>
       </div>
 
       <form onSubmit={form.handleSubmit((d) => mutation.mutate(d))} className="space-y-6">
-        {/* HEADER FORM SIMPLIFIED */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
           <div>
             <label className="block text-sm font-medium text-gray-700">Tanggal</label>
@@ -142,12 +162,11 @@ export default function TransactionForm() {
           
           <div>
             <label className="block text-sm font-medium text-gray-700">Uraian / Keterangan</label>
-            <input {...form.register('description')} placeholder="Contoh: Pembayaran Listrik Bulan Ini" className="w-full border rounded-md p-2 mt-1 focus:ring-2 focus:ring-blue-500 outline-none" />
+            <input {...form.register('description')} placeholder="Contoh: Pembayaran Listrik" className="w-full border rounded-md p-2 mt-1 focus:ring-2 focus:ring-blue-500 outline-none" />
             {form.formState.errors.description && <p className="text-red-500 text-xs">{form.formState.errors.description.message}</p>}
           </div>
         </div>
 
-        {/* DETAIL JURNAL */}
         <div className="border rounded-md overflow-hidden bg-gray-50/50">
           <div className="bg-gray-100 px-4 py-2 border-b flex justify-between items-center">
             <h3 className="font-semibold text-gray-700 text-sm">Detail Debit / Kredit</h3>
@@ -160,7 +179,7 @@ export default function TransactionForm() {
               <thead>
                 <tr className="text-left text-gray-500">
                   <th className="p-2 w-1/3">Akun</th>
-                  <th className="p-2">Keterangan Baris (Opsional)</th>
+                  <th className="p-2">Keterangan (Opsional)</th>
                   <th className="p-2 w-1/6 text-right">Debit</th>
                   <th className="p-2 w-1/6 text-right">Kredit</th>
                   <th className="p-2 w-8"></th>
@@ -186,7 +205,6 @@ export default function TransactionForm() {
           </div>
         </div>
 
-        {/* FOOTER */}
         <div className="flex flex-col md:flex-row justify-between items-center bg-gray-50 p-4 rounded border gap-4">
           <div className="text-sm space-y-1">
              <div className="flex gap-4">
@@ -203,7 +221,7 @@ export default function TransactionForm() {
                <option value="POSTED" disabled={!isBalanced}>POSTING FINAL</option>
             </select>
             <button type="submit" disabled={mutation.isPending} className="bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700 disabled:opacity-50 flex-1 md:flex-none">
-              {mutation.isPending ? 'Proses...' : 'Simpan'}
+              {mutation.isPending ? 'Proses...' : (isEditMode ? 'Update' : 'Simpan & Baru')}
             </button>
           </div>
         </div>
