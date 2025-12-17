@@ -11,6 +11,8 @@ import MasterAccounts from './pages/MasterAccounts';
 import Settings from './pages/Settings';
 import Login from './pages/Login';
 import LandingPage from './pages/LandingPage';
+import TrialBalance from './pages/TrialBalance'; // Baru
+import BalanceSheetReport from './pages/BalanceSheetReport'; // Baru
 import { AuthProvider, useAuth } from './features/auth/AuthContext';
 
 const queryClient = new QueryClient();
@@ -29,35 +31,26 @@ function App() {
           <Toaster position="top-right" richColors closeButton />
           
           <Routes>
-            {/* 1. ROUTE PUBLIK (Bisa diakses siapa saja) */}
             <Route path="/" element={<LandingPage />} />
             <Route path="/portal-staff" element={<Login />} />
             
-            {/* 2. ROUTE TERPROTEKSI (Admin Panel) */}
             <Route element={<ProtectedRoute />}>
-              {/* MainLayout membungkus semua halaman admin */}
               <Route element={<MainLayout />}>
-                
-                {/* Halaman Dashboard Utama */}
                 <Route path="/dashboard" element={<Dashboard />} />
 
-                {/* Halaman Transaksi */}
                 <Route path="/transactions" element={<TransactionList />} />
                 <Route path="/transactions/new" element={<TransactionForm />} />
                 <Route path="/transactions/:id/edit" element={<TransactionForm />} />
                 
-                {/* Halaman Laporan */}
                 <Route path="/reports/profit-loss" element={<ProfitLossReport />} />
+                <Route path="/reports/balance-sheet" element={<BalanceSheetReport />} /> {/* Baru */}
+                <Route path="/reports/trial-balance" element={<TrialBalance />} /> {/* Baru */}
                 
-                {/* Halaman Master Data */}
                 <Route path="/master/accounts" element={<MasterAccounts />} />
-
-                {/* Halaman Pengaturan */}
                 <Route path="/settings" element={<Settings />} />
               </Route>
             </Route>
 
-            {/* Redirect jika user nyasar ke halaman yang tidak ada */}
             <Route path="*" element={<Navigate to="/" />} />
           </Routes>
         </AuthProvider>
