@@ -93,8 +93,9 @@ export default function GeneralLedger() {
             {isLoading ? <tr><td colSpan={6} className="p-8 text-center text-gray-500">Memuat data transaksi...</td></tr> :
             entries?.length === 0 ? <tr><td colSpan={6} className="p-8 text-center text-gray-400 italic">Tidak ada transaksi di tahun ini.</td></tr> :
             entries?.map((row: any, idx: number) => {
-              // Hitung Saldo Berjalan (Running Balance)
-              const movement = row.debit - row.credit;
+              
+              // FIX: Menghapus variabel 'movement' yang tidak terpakai
+              
               // Jika akun Liability/Equity/Revenue, saldo normal kredit (dibalik)
               const isCreditNormal = ['LIABILITY', 'EQUITY', 'REVENUE'].includes(accountInfo?.type);
               
