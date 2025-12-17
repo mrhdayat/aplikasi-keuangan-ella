@@ -14,6 +14,7 @@ import LandingPage from './pages/LandingPage';
 import TrialBalance from './pages/TrialBalance'; // Baru
 import BalanceSheetReport from './pages/BalanceSheetReport'; // Baru
 import { AuthProvider, useAuth } from './features/auth/AuthContext';
+import GeneralLedger from './pages/GeneralLedger';
 
 const queryClient = new QueryClient();
 
@@ -45,6 +46,7 @@ function App() {
                 <Route path="/reports/profit-loss" element={<ProfitLossReport />} />
                 <Route path="/reports/balance-sheet" element={<BalanceSheetReport />} /> {/* Baru */}
                 <Route path="/reports/trial-balance" element={<TrialBalance />} /> {/* Baru */}
+                <Route path="/reports/ledger/:accountId" element={<GeneralLedger />} />
                 
                 <Route path="/master/accounts" element={<MasterAccounts />} />
                 <Route path="/settings" element={<Settings />} />
